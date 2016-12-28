@@ -1,0 +1,22 @@
+version: "2"
+networks:
+  working:
+    external: true
+services:
+  event-socket:
+    build: ./event-socket
+    volumes:
+      - ./event-socket:/work
+    working_dir: /work
+    command: node run.js
+    networks:
+      - working
+  test:
+    build: ./event-socket
+    volumes:
+      - ./event-socket:/work
+    working_dir: /work
+    command: node test.js
+    networks:
+      - working
+
