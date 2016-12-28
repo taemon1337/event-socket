@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var EventSocket = require('./event-socket');
+var EventSocket = require('/event-socket/event-socket');
 var es = new EventSocket('ws://event-socket:8080/');
 
 es.bind('open', function() {

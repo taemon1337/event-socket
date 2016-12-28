@@ -32,24 +32,23 @@
 
     this.pipe = function(stream, data) {
       var stream_id = Math.random().toString().replace(".","");
+      var count = 0;
 
       stream.on('data', function(chunk) {
-        var payload = JSON.stringify({
-          id: stream_id,
-          event: "stream",
-          chunk: chunk.toString('base64'),
-          data: data
-        });
+        var encoded = new Buffer(chunk, 'binary').toString('base64');
+        var evt_data = { id: stream_id, count: count, chunk: encoded };
+        for(var key in data) { evt_data[key] = data[key]; }
+
+        var payload = JSON.stringify({ event: "stream", data: evt_data });
+        console.log("PAYLOAD: ", payload);
         conn.send(payload);
+        count += 1;
       });
 
       stream.on('end', function() {
-        var payload = JSON.stringify({
-          id: stream_id,
-          event: "stream",
-          chunk: null, 
-          data: data
-        });
+        var evt_data = { id: stream_id, count: count };
+        for(var key in data) { evt_data[key] = data[key]; }
+        var payload = JSON.stringify({ event: "stream:end", data: evt_data });
         conn.send(payload);
       });
 
@@ -59,6 +58,11 @@
     conn.onmessage = function(evt) {
       var json = JSON.parse(evt.data);
       dispatch(json.event, json.data);
+      if(json.data.subevent) {
+        // es.on('create:user', createPerson)
+        // es.on('stream:zip', handleZipStream)
+        dispatch([json.event,json.data.subevent].join(':'), json.data);
+      }
     };
 
     conn.onclose = function() { dispatch('close', null) }

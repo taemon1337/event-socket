@@ -6,17 +6,40 @@ services:
   event-socket:
     build: ./event-socket
     volumes:
+      - ./event-socket:/event-socket
       - ./event-socket:/work
     working_dir: /work
     command: node run.js
     networks:
       - working
-  test:
+  event-test:
     build: ./event-socket
     volumes:
+      - ./event-socket:/event-socket
       - ./event-socket:/work
+    depends_on:
+      - "event-socket"
     working_dir: /work
     command: node test.js
     networks:
       - working
-
+  zip-socket:
+    build: ./zip-socket
+    volumes:
+      - ./zip-socket:/work
+      - ./event-socket:/event-socket
+    working_dir: /work
+    command: node run.js
+    networks:
+      - working
+  zip-test:
+    build: ./zip-socket
+    volumes:
+      - ./event-socket:/event-socket
+      - ./zip-socket:/work
+    depends_on:
+      - "zip-socket"
+    working_dir: /work
+    command: node test.js
+    networks:
+      - working

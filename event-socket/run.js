@@ -1,4 +1,4 @@
-var EventSocket = require('./event-socket'),
+var EventSocket = require('/event-socket/event-socket'),
     WebSocketServer = require('ws').Server,
     port = process.env.PORT || 8080
   ;
