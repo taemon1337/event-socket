@@ -33,6 +33,12 @@
     this.pipe = function(stream, data) {
       var stream_id = Math.random().toString().replace(".","");
       var count = 0;
+      var init_data = { id: stream_id, count: count };
+      for(var key in data) {
+        init_data[key] = data[key];
+      }
+
+      conn.send(JSON.stringify({ event: "stream:init", data: init_data }));
 
       stream.on('data', function(chunk) {
         var encoded = new Buffer(chunk, 'binary').toString('base64');
@@ -40,7 +46,6 @@
         for(var key in data) { evt_data[key] = data[key]; }
 
         var payload = JSON.stringify({ event: "stream", data: evt_data });
-        console.log("PAYLOAD: ", payload);
         conn.send(payload);
         count += 1;
       });

@@ -43,3 +43,23 @@ services:
     command: node test.js
     networks:
       - working
+  crypto-socket:
+    build: ./crypto-socket
+    volumes:
+      - ./crypto-socket:/work
+      - ./event-socket:/event-socket
+    working_dir: /work
+    command: node run.js
+    networks:
+      - working
+  crypto-test:
+    build: ./crypto-socket
+    volumes:
+      - ./event-socket:/event-socket
+      - ./crypto-socket:/work
+    depends_on:
+      - "crypto-socket"
+    working_dir: /work
+    command: node test.js
+    networks:
+      - working
